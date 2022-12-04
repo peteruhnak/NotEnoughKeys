@@ -1,0 +1,26 @@
+﻿{
+  "hook": {
+    "CapsLock & h": "left",
+    "CapsLock & j": "down",
+    "CapsLock & k": "up",
+    "CapsLock & l": "right",
+    "CapsLock & space": "enter",
+    "CapsLock & 4": "end",
+    "CapsLock & 6": "home",
+    "CapsLock & d": "delete",
+    "CapsLock & u": {
+      "raw": "hmm",
+      "when": {
+        "exe": "notepad.exe"
+      }
+    }
+  },
+  "hotkey": {
+    "Ctrl & Alt & t": {
+      "run": "wt"
+    },
+    "Ctrl & Alt & y": {
+      "run": "meow"
+    }
+  }
+}
