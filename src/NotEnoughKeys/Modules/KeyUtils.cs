@@ -1,19 +1,18 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 
-namespace NotEnoughKeys;
+namespace NotEnoughKeys.Modules;
 
 using VK = VirtualKey;
 
-public static class InputSender
+public static class KeyUtils
 {
-    internal static void SendKeyPresses(VK[] virtualKey)
+    internal static void SendKeyPresses(IEnumerable<VirtualKey> virtualKey)
     {
         var inputs = new List<INPUT>();
-        foreach (VirtualKey k in virtualKey)
+        foreach (var k in virtualKey)
         {
             inputs.Add(KeyDown((VIRTUAL_KEY)k));
             inputs.Add(KeyUp((VIRTUAL_KEY)k));
@@ -27,7 +26,7 @@ public static class InputSender
         var span = new Span<INPUT>(inputs);
         if (PInvoke.SendInput(span, Marshal.SizeOf(typeof(INPUT))) != span.Length)
         {
-            string errorMessage = new Win32Exception(Marshal.GetLastWin32Error()).Message;
+            var errorMessage = new Win32Exception(Marshal.GetLastWin32Error()).Message;
             GlobalLog.Error($"SendInput() failed: {errorMessage}");
         }
     }

@@ -28,7 +28,34 @@ WM_KEYUP
 WM_SYSKEYDOWN
 WM_SYSKEYUP
 WM_USER
+
+WM_LBUTTON*
+WM_MOUSE*
+WM_RBUTTON*
 KBDLLHOOKSTRUCT
+MSLLHOOKSTRUCT
+KBDLLHOOKSTRUCT_FLAGS
 
 MapVirtualKey
 MAPVK_*
+
+// Window Management
+SetWindowPos
+GetWindowRect
+GetClientRect
+GetWindowInfo
+HWND_BOTTOM
+HWND_NOTOPMOST
+HWND_TOP
+HWND_TOPMOST
+
+// Mouse
+GetCursorPos
+LoadCursor
+SetSystemCursor
+IDC_SIZE*
+
+// Monitors
+EnumDisplayMonitors
+GetMonitorInfo
+GetSystemMetrics

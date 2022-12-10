@@ -50,10 +50,10 @@ public class ConfigLoaderTests
     [Test]
     public void ParseConfig()
     {
-        Config config = ConfigLoader.LoadFromString(ExampleConfig);
+        var config = ConfigLoader.LoadFromString(ExampleConfig);
         Assert.Multiple(() =>
         {
-            Assert.That(config.Hooks, Has.Count.EqualTo(2));
+            Assert.That(config.Hooks, Has.Count.EqualTo(3));
             Assert.That(config.Hotkeys, Has.Count.EqualTo(1));
 
             Assert.That(config.Hooks[0].Keys, Is.EqualTo(new[] { VK.CapsLock, VK.D }));
@@ -69,6 +69,12 @@ public class ConfigLoaderTests
             Assert.That(config.Hooks[1].When, Is.Not.Null);
             Assert.That(config.Hooks[1].When!.Exe, Is.EqualTo("notepad.exe"));
             Assert.That(config.Hooks[1].When!.Title, Is.EqualTo("Notepad"));
+            
+            Assert.That(config.Hooks[2].Keys, Is.EqualTo(new[] { VK.CapsLock, VK.Q }));
+            Assert.That(config.Hooks[2].Modifiers, Is.Null);
+            Assert.That(config.Hooks[2].Send, Is.Null);
+            Assert.That(config.Hooks[2].Run, Is.Null);
+            Assert.That(config.Hooks[2].Special, Is.EqualTo("MoveWindow"));
 
             Assert.That(config.Hotkeys[0].Keys, Is.EqualTo(new[] { VK.T }));
             Assert.That(config.Hotkeys[0].Modifiers, Is.EqualTo(Modifiers.Control | Modifiers.Alt));
@@ -88,6 +94,9 @@ public class ConfigLoaderTests
                         ""exe"": ""notepad.exe"",
                         ""title"": ""Notepad""
                     }
+                },
+                ""CapsLock & q"": {
+                    ""special"": ""MoveWindow""
                 }
             },
             ""hotkey"": {

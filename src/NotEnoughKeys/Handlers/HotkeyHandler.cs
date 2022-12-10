@@ -1,4 +1,6 @@
-﻿namespace NotEnoughKeys;
+﻿using NotEnoughKeys.Dispatch;
+
+namespace NotEnoughKeys.Handlers;
 
 public class HotkeyHandler
 {

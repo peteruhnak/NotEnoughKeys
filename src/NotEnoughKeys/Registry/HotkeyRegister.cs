@@ -1,8 +1,9 @@
 ﻿using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
+using NotEnoughKeys.Handlers;
 
-namespace NotEnoughKeys;
+namespace NotEnoughKeys.Registry;
 
 public class HotkeyRegister : IDisposable
 {
@@ -27,7 +28,7 @@ public class HotkeyRegister : IDisposable
     public void Register(HotkeyHandler hotkeyHandler)
     {
         _hotkeyHandler = hotkeyHandler;
-        foreach (Binding binding in _hotkeys)
+        foreach (var binding in _hotkeys)
         {
             if (binding.Modifiers != null && binding.Keys.Length == 1)
             {
@@ -40,7 +41,7 @@ public class HotkeyRegister : IDisposable
 
     private void OnHotKeyPressed(object? sender, HotkeyEventArgs e)
     {
-        Binding? binding = _hotkeys.FirstOrDefault(b =>
+        var binding = _hotkeys.FirstOrDefault(b =>
             b.Keys.Length == 1 && b.Keys[0] == e.Key && e.Modifiers == (b.Modifiers ?? 0));
         if (binding != null)
             _hotkeyHandler?.HandleHotkey(binding);
@@ -50,7 +51,7 @@ public class HotkeyRegister : IDisposable
 
     public void RegisterHotkey(Modifiers modifiers, VirtualKey key)
     {
-        int id = Interlocked.Increment(ref _idCounter);
+        var id = Interlocked.Increment(ref _idCounter);
         if (PInvoke.RegisterHotKey((HWND)Wnd.Handle, id, (HOT_KEY_MODIFIERS)modifiers, (uint)key))
         {
             HotkeyIds.Add(id);
@@ -64,7 +65,7 @@ public class HotkeyRegister : IDisposable
     private static void UnregisterAllHotkeys()
     {
         GlobalLog.Info("Unregistering all hotkeys");
-        foreach (int hotkeyId in HotkeyIds)
+        foreach (var hotkeyId in HotkeyIds)
         {
             UnregisterHotKey(hotkeyId);
         }
@@ -130,7 +131,7 @@ public class HotkeyEventArgs : EventArgs
 
     public HotkeyEventArgs(IntPtr hotKeyParam)
     {
-        long dword = hotKeyParam.ToInt64();
+        var dword = hotKeyParam.ToInt64();
         Key = (VirtualKey)(dword >> 16);
         Modifiers = (Modifiers)(dword & 0xFFFF);
     }

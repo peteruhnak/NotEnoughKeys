@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics;
-using Windows.Win32;
+using NotEnoughKeys.Handlers;
+using NotEnoughKeys.Modules;
 
-namespace NotEnoughKeys;
+namespace NotEnoughKeys.Dispatch;
 
 public static class ActionDispatch
 {
@@ -11,7 +12,7 @@ public static class ActionDispatch
             return false;
         if (action.Send is { } sendKeys)
         {
-            InputSender.SendKeyPresses(sendKeys);
+            KeyUtils.SendKeyPresses(sendKeys);
             return true;
         }
 
@@ -25,7 +26,7 @@ public static class ActionDispatch
 
             try
             {
-                using Process? process = Process.Start(startInfo);
+                using var process = Process.Start(startInfo);
                 if (process != null)
                     GlobalLog.Info($"Launched {process.Id} {process.ProcessName}");
                 else
@@ -35,6 +36,13 @@ public static class ActionDispatch
             {
                 GlobalLog.Error($"Failed to start process {run}", e);
             }
+
+            return true;
+        }
+
+        if (action.Special is { } special)
+        {
+            SpecialHandler.HandleSpecial(special);
         }
 
         return true;
@@ -43,49 +51,10 @@ public static class ActionDispatch
     public static bool WhenMatches(WhenCondition? when)
     {
         if (when == null) return true;
-        ProcessInfo? info = ForegroundProcessInfo();
+        var info = ProcessUtils.ProcessInfoForWindow(WindowUtils.GetForegroundWindow());
         if (info == null) return false;
 
         return (when.Exe == null || (info.FileName ?? "").Equals(when.Exe, StringComparison.InvariantCultureIgnoreCase))
                && (when.Title == null || info.Title.Equals(when.Title, StringComparison.InvariantCultureIgnoreCase));
     }
-
-    public static ProcessInfo? ForegroundProcessInfo()
-    {
-        uint processId = 0;
-        unsafe
-        {
-#pragma warning disable CA1806
-            PInvoke.GetWindowThreadProcessId(PInvoke.GetForegroundWindow(), &processId);
-#pragma warning restore CA1806
-        }
-
-        if (processId <= 0) return null;
-        try
-        {
-            using var process = Process.GetProcessById((int)processId);
-            return new ProcessInfo
-            {
-                Id = process.Id,
-                ProcessName = process.ProcessName,
-                Title = process.MainWindowTitle,
-                FileName = process.MainModule?.FileName,
-                ModuleName = process.MainModule?.ModuleName
-            };
-        }
-        catch (Exception e)
-        {
-            GlobalLog.Error("Failed to obtain foreground process information", e);
-            return null;
-        }
-    }
-}
-
-public class ProcessInfo
-{
-    public int Id { get; init; }
-    public string Title { get; init; } = null!;
-    public string ProcessName { get; init; } = null!;
-    public string? FileName { get; init; }
-    public string? ModuleName { get; init; }
 }

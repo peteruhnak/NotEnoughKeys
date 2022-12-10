@@ -22,16 +22,16 @@ public static class ConfigLoader
             throw new InvalidConfigException($"Failed to parse config:\n{configText}");
         var hooks = new List<Binding>();
         if (output.Hooks is { } rawHooks)
-            foreach ((string key, JsonElement value) in rawHooks)
+            foreach (var (key, value) in rawHooks)
                 hooks.Add(ParseBinding(key, value, isHotkey: false));
         var hotkeys = new List<Binding>();
         if (output.Hotkeys is { } rawHotkeys)
-            foreach ((string key, JsonElement value) in rawHotkeys)
+            foreach (var (key, value) in rawHotkeys)
                 hotkeys.Add(ParseBinding(key, value, isHotkey: true));
         return new Config
         {
             Hooks = hooks,
-            Hotkeys = hotkeys,
+            Hotkeys = hotkeys
         };
     }
 
@@ -49,6 +49,7 @@ public static class ConfigLoader
             binding.Keys = allKeys;
         }
 
+        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
         switch (value.ValueKind)
         {
             case JsonValueKind.String:
@@ -69,12 +70,13 @@ public static class ConfigLoader
                 }
 
                 binding.Run = rawBinding.Run;
+                binding.Special = rawBinding.Special;
                 if (rawBinding.When is { } dict)
                 {
                     binding.When = new WhenCondition();
-                    if (dict.TryGetValue("exe", out string? whenExe))
+                    if (dict.TryGetValue("exe", out var whenExe))
                         binding.When.Exe = whenExe;
-                    if (dict.TryGetValue("title", out string? whenTitle))
+                    if (dict.TryGetValue("title", out var whenTitle))
                         binding.When.Title = whenTitle;
                 }
 
@@ -92,7 +94,7 @@ public static class ConfigLoader
         return ParseKeyCombination(keySpec.Split("&").Select(s => s.Trim()).ToList());
     }
 
-    internal static VK[] ParseKeyCombination(IList<string> keySpec)
+    internal static VK[] ParseKeyCombination(IEnumerable<string> keySpec)
     {
         return keySpec.Select(KeyMapper.FromString).ToArray();
     }
@@ -123,13 +125,14 @@ public class RawBinding
     [JsonPropertyName("send")] public string? Send { get; set; }
     [JsonPropertyName("raw")] public string? Raw { get; set; }
     [JsonPropertyName("run")] public string? Run { get; set; }
+    [JsonPropertyName("special")] public string? Special { get; set; }
     [JsonPropertyName("when")] public Dictionary<string, string>? When { get; set; }
 }
 
 public class Config
 {
-    public IList<Binding> Hooks { get; set; } = null!;
-    public IList<Binding> Hotkeys { get; set; } = null!;
+    public IList<Binding> Hooks { get; init; } = null!;
+    public IList<Binding> Hotkeys { get; init; } = null!;
 }
 
 public class Binding
@@ -138,6 +141,7 @@ public class Binding
     public Modifiers? Modifiers { get; set; }
     public VK[]? Send { get; set; }
     public string? Run { get; set; }
+    public string? Special { get; set; }
     public WhenCondition? When { get; set; }
 }
 

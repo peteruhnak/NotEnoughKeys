@@ -58,7 +58,7 @@ public static class KeyMapper
         VirtualKey.Delete,
         VirtualKey.Apps,
         VirtualKey.Lwin,
-        VirtualKey.Rwin,
+        VirtualKey.Rwin
     };
 }
 
@@ -69,7 +69,7 @@ public enum Modifiers : uint
     Alt = 0x1,
     Control = 0x2,
     Shift = 0x4,
-    Win = 0x8,
+    Win = 0x8
 }
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]
@@ -86,7 +86,7 @@ public enum UsKey : ushort
     Minus = VirtualKey.OemMinus,
     Plus = VirtualKey.OemPlus,
     Comma = VirtualKey.OemComma,
-    Period = VirtualKey.OemPeriod,
+    Period = VirtualKey.OemPeriod
 }
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]
@@ -328,5 +328,5 @@ public enum VirtualKey : ushort
     Zoom = 251,
     Noname = 252,
     Pa1 = 253,
-    OemClear = 254,
+    OemClear = 254
 }

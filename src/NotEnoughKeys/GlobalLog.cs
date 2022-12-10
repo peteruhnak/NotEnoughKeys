@@ -49,10 +49,10 @@ public class LogEventArgs : EventArgs
 
 public class LogMessage
 {
-    public LogLevel Level { get; set; }
-    public string Message { get; set; } = null!;
-    public Exception? Exception { get; set; }
-    public DateTime Timestamp { get; set; }
+    public LogLevel Level { get; init; }
+    public string Message { get; init; } = null!;
+    public Exception? Exception { get; init; }
+    public DateTime Timestamp { get; init; }
 }
 
 public enum LogLevel
@@ -60,5 +60,5 @@ public enum LogLevel
     Debug,
     Info,
     Warn,
-    Error,
+    Error
 }

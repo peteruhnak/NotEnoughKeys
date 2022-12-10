@@ -8,6 +8,12 @@
     "CapsLock & 4": "end",
     "CapsLock & 6": "home",
     "CapsLock & d": "delete",
+    "CapsLock & q": {
+      "special": "MoveWindow"
+    },
+    "CapsLock & e": {
+      "special": "ResizeWindow"
+    },
     "CapsLock & u": {
       "raw": "hmm",
       "when": {
@@ -18,9 +24,6 @@
   "hotkey": {
     "Ctrl & Alt & t": {
       "run": "wt"
-    },
-    "Ctrl & Alt & y": {
-      "run": "meow"
     }
   }
 }

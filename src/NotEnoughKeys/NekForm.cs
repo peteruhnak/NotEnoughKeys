@@ -9,9 +9,12 @@ public partial class NekForm : Form
     private readonly NotifyIcon _trayIcon;
     private readonly TextBox _debugLogBox;
 
+    public static Control Instance { get; set; } = null!;
+
     [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
     public NekForm(string configFile)
     {
+        Instance = this;
         InitializeComponent();
 
         var panel = new FlowLayoutPanel
@@ -49,7 +52,7 @@ public partial class NekForm : Form
 
         _trayIcon = new NotifyIcon
         {
-            Text = "NEK",
+            Text = "NotEnoughKeys",
             Icon = new Icon(SystemIcons.Application, 40, 40),
             ContextMenuStrip = contextMenu,
             Visible = true
@@ -61,10 +64,10 @@ public partial class NekForm : Form
 
     private void GlobalLogOnOnMessage(object? sender, LogEventArgs e)
     {
-        LogMessage log = e.LogMessage;
-        _debugLogBox.Text += $"[{log.Timestamp}] {log.Level} {log.Message}\r\n";
+        var log = e.LogMessage;
         if (log.Exception is { } ex)
-            _debugLogBox.Text += ex.ToString();
+            _debugLogBox.Text = $"{ex}{_debugLogBox.Text}";
+        _debugLogBox.Text = $"[{log.Timestamp}] {log.Level} {log.Message}\r\n" + _debugLogBox.Text;
     }
 
     private void Dispose2()
