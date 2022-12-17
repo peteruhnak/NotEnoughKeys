@@ -4,10 +4,11 @@ using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
 using NotEnoughKeys.Dispatch;
 using NotEnoughKeys.Modules;
+using NotEnoughKeys.Registry;
 
 namespace NotEnoughKeys.Handlers;
 
-public class KeyboardLowLevelHookHandler
+internal class KeyboardLowLevelHookHandler : IKeyboardLowLevelHookHandler
 {
     private static bool _isSending;
     private static KeyState _capsLockState = KeyState.Up;
@@ -34,7 +35,7 @@ public class KeyboardLowLevelHookHandler
         }
     }
 
-    internal bool HandleKey(WPARAM wParam, KBDLLHOOKSTRUCT lParam)
+    public bool HandleKey(WPARAM wParam, KBDLLHOOKSTRUCT lParam)
     {
         var key = (VIRTUAL_KEY)lParam.vkCode;
         var keyState = wParam.Value is PInvoke.WM_KEYDOWN ? KeyState.Down : KeyState.Up;
@@ -60,7 +61,7 @@ public class KeyboardLowLevelHookHandler
             return true; // always consume CapsLock change
         }
 
-        if (_capsLockState == KeyState.Up) return false; // currently no non-CapsLock support
+        if (_capsLockState == KeyState.Up) return false; // currently only CapsLock-based shortcuts are permitted for global hook
 
         if (keyState == KeyState.Up)
         {
@@ -81,6 +82,10 @@ public class KeyboardLowLevelHookHandler
         // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
         switch (key)
         {
+            case VIRTUAL_KEY.VK_LWIN:
+                if (SpecialHandler.HandleSpecial2("MoveWindow") is { } moveWindowWrapper)
+                    _liveBindings.Add(key, moveWindowWrapper);
+                return true;
             case VIRTUAL_KEY.VK_Q:
                 if (SpecialHandler.HandleSpecial2("MoveWindow") is { } wrapper1)
                     _liveBindings.Add(key, wrapper1);

@@ -3,29 +3,28 @@ using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
-using NotEnoughKeys.Handlers;
 
 namespace NotEnoughKeys.Registry;
 
-public class HookRegister2 : IDisposable
+internal class HookRegister2 : IDisposable
 {
     private HOOKPROC _hookProc = null!;
     private SafeHandle? _safeHandle;
-    private MouseLowLevelHookHandler? _hookHandler;
+    private IMouseLowLevelHookHandler? _hookHandler;
     private bool _isDisposed;
 
-    public void Register(MouseLowLevelHookHandler hookHandler)
+    public void Register(IMouseLowLevelHookHandler mouseLowLevelHookHandler)
     {
         GlobalLog.Info("Registering mouse low level hook");
-        _hookHandler = hookHandler;
+        _hookHandler = mouseLowLevelHookHandler;
         _hookProc = MouseLowLevelProc;
         _safeHandle = SetHook(_hookProc, WINDOWS_HOOK_ID.WH_MOUSE_LL);
     }
 
     public void Unregister()
     {
-        GlobalLog.Info("Unregistering mouse low level hook");
         if (_safeHandle == null) return;
+        GlobalLog.Info("Unregistering mouse low level hook");
         PInvoke.UnhookWindowsHookEx(new HHOOK(_safeHandle.DangerousGetHandle()));
         _safeHandle.Dispose();
         _safeHandle = null;
@@ -41,7 +40,6 @@ public class HookRegister2 : IDisposable
 
         return PInvoke.CallNextHookEx(HHOOK.Null, nCode, wParam, lParam);
     }
-
 
     private SafeHandle SetHook(HOOKPROC hookProc, WINDOWS_HOOK_ID windowsHookId)
     {

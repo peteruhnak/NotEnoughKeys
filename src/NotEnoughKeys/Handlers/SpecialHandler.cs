@@ -1,4 +1,5 @@
 ﻿using Windows.Win32;
+using NotEnoughKeys.Modules;
 using NotEnoughKeys.Tiling;
 
 namespace NotEnoughKeys.Handlers;
@@ -6,7 +7,6 @@ namespace NotEnoughKeys.Handlers;
 public static class SpecialHandler
 {
     private static MoveWindowHandler? _moveWindowHandler;
-    private static ResizeWindowHandler? _resizeWindowHandler;
 
     public static void HandleSpecial(string special)
     {
@@ -17,7 +17,7 @@ public static class SpecialHandler
         var wrapper = special switch
         {
             "MoveWindow" => new SpecialWrapper { OnStart = MoveWindowStart, OnStop = MoveWindowEnd },
-            "ResizeWindow" => new SpecialWrapper { OnStart = ResizeWindowStart, OnStop = ResizeWindowEnd },
+            "ResizeWindow" => new SpecialWrapper { OnStart = MoveWindowStart, OnStop = MoveWindowEnd },
             _ => null
         };
         wrapper?.Start();
@@ -28,7 +28,7 @@ public static class SpecialHandler
     {
         if (_moveWindowHandler == null)
         {
-            var hwnd = PInvoke.GetForegroundWindow();
+            var hwnd = WindowUtils.GetForegroundWindow();
             if (hwnd.IsNull) return;
             _moveWindowHandler = new MoveWindowHandler(hwnd);
             _moveWindowHandler.Start();
@@ -39,23 +39,6 @@ public static class SpecialHandler
     {
         _moveWindowHandler?.Stop();
         _moveWindowHandler = null;
-    }
-
-    public static void ResizeWindowStart()
-    {
-        if (_resizeWindowHandler == null)
-        {
-            var hwnd = PInvoke.GetForegroundWindow();
-            if (hwnd.IsNull) return;
-            _resizeWindowHandler = new ResizeWindowHandler(hwnd);
-            _resizeWindowHandler.Start();
-        }
-    }
-
-    public static void ResizeWindowEnd()
-    {
-        _resizeWindowHandler?.Stop();
-        _resizeWindowHandler = null;
     }
 }
 

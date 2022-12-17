@@ -64,10 +64,14 @@ public partial class NekForm : Form
 
     private void GlobalLogOnOnMessage(object? sender, LogEventArgs e)
     {
-        var log = e.LogMessage;
-        if (log.Exception is { } ex)
-            _debugLogBox.Text = $"{ex}{_debugLogBox.Text}";
-        _debugLogBox.Text = $"[{log.Timestamp}] {log.Level} {log.Message}\r\n" + _debugLogBox.Text;
+        if (!Instance.Visible) return;
+        Instance.Invoke(() =>
+        {
+            var log = e.LogMessage;
+            if (log.Exception is { } ex)
+                _debugLogBox.Text = $"{ex}{_debugLogBox.Text}";
+            _debugLogBox.Text = $"[{log.Timestamp}] {log.Level} {log.Message}\r\n" + _debugLogBox.Text;
+        });
     }
 
     private void Dispose2()

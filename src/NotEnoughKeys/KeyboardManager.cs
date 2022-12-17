@@ -7,7 +7,6 @@ public class KeyboardManager : IDisposable
 {
     private HookRegister _hookRegister = null!;
     private KeyboardLowLevelHookHandler _keyboardLowLevelHookHandler = null!;
-    private MouseLowLevelHookHandler _mouseLowLevelHookHandler = null!;
     private HotkeyRegister _hotkeyRegister = null!;
     private HotkeyHandler _hotkeyHandler = null!;
     private bool _isDisposed;
@@ -15,7 +14,6 @@ public class KeyboardManager : IDisposable
     public void Initialize(Config config)
     {
         _keyboardLowLevelHookHandler = new KeyboardLowLevelHookHandler(config);
-        _mouseLowLevelHookHandler = new MouseLowLevelHookHandler(config);
         _hookRegister = new HookRegister();
 
         _hotkeyHandler = new HotkeyHandler();
